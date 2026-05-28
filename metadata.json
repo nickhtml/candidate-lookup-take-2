@@ -1,0 +1,6 @@
+{
+  "name": "Candidate Lookup Tool",
+  "description": "A voter guide and candidate lookup tool optimized for mobile embeds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
