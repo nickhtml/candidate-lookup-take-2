@@ -8,6 +8,7 @@ import { candidatesData } from './data/candidates';
 import { Header } from './components/Header';
 import { LookupFilters } from './components/LookupFilters';
 import { CandidateCard } from './components/CandidateCard';
+import { Code as CodeIcon } from 'lucide-react';
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,8 +17,10 @@ export default function App() {
   // District matching state
   const [addressLookupActive, setAddressLookupActive] = useState(false);
   const [userCongressional, setUserCongressional] = useState<string | null>(null);
+  const [userStateSenate, setUserStateSenate] = useState<string | null>(null);
   const [userStateHouse, setUserStateHouse] = useState<string | null>(null);
   const [userPollingLocation, setUserPollingLocation] = useState<{name: string, address: string} | null>(null);
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
   // Derive the active candidates to render
   const filteredData = useMemo(() => {
@@ -38,7 +41,7 @@ export default function App() {
     }
     
     // 3. Address / District Matching Filter
-    if (addressLookupActive && (userCongressional || userStateHouse)) {
+    if (addressLookupActive && (userCongressional || userStateSenate || userStateHouse)) {
       filtered = filtered.filter(candidate => {
          // Everyone sees statewide
          if (candidate.level === 'Statewide') return true;
@@ -69,7 +72,7 @@ export default function App() {
     }, {} as Record<string, typeof candidatesData>);
 
     return grouped;
-  }, [searchTerm, selectedCategory, addressLookupActive, userCongressional, userStateHouse]);
+  }, [searchTerm, selectedCategory, addressLookupActive, userCongressional, userStateSenate, userStateHouse]);
 
   // Define display order
   const order = ['Statewide', 'Congressional', 'State House'];
@@ -84,9 +87,11 @@ export default function App() {
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           userCongressional={userCongressional}
+          userStateSenate={userStateSenate}
           userStateHouse={userStateHouse}
           userPollingLocation={userPollingLocation}
           setUserCongressional={setUserCongressional}
+          setUserStateSenate={setUserStateSenate}
           setUserStateHouse={setUserStateHouse}
           setUserPollingLocation={setUserPollingLocation}
           addressLookupActive={addressLookupActive}
@@ -123,7 +128,38 @@ export default function App() {
             )}
           </div>
         )}
+
+        {/* Footer Embed Link */}
+        <div className="mt-8 text-center text-xs text-gray-500 flex justify-center items-center">
+            <button onClick={() => setIsEmbedModalOpen(true)} className="flex items-center gap-1 hover:text-[#0A2540] transition-colors">
+                <CodeIcon className="w-3 h-3" /> Embed this tool
+            </button>
+        </div>
       </main>
+
+      {/* Embed Modal */}
+      {isEmbedModalOpen && (
+         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+            <div className="bg-white rounded max-w-sm w-full p-6 shadow-xl relative text-left">
+                <h3 className="font-bold text-lg text-[#0A2540] mb-2">Embed Lookup Tool</h3>
+                <p className="text-xs text-gray-600 mb-4">Copy the code below to embed the OKDEMS Candidate Lookup form securely on your own website.</p>
+                
+                <div className="bg-gray-100 p-3 rounded border border-gray-200 font-mono text-[10px] text-gray-800 break-all select-all h-32 overflow-y-auto mb-4">
+                    {`<div style="width: 100%; max-width: 400px; margin: 0 auto;">\n  <iframe src="https://candidatelookup2.vercel.app/" width="100%" height="800" style="border: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="2026 Candidate Lookup" loading="lazy"></iframe>\n</div>`}
+                </div>
+
+                <button 
+                  onClick={() => {
+                     navigator.clipboard.writeText(`<div style="width: 100%; max-width: 400px; margin: 0 auto;">\n  <iframe src="https://candidatelookup2.vercel.app/" width="100%" height="800" style="border: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="2026 Candidate Lookup" loading="lazy"></iframe>\n</div>`);
+                     alert("Copied to clipboard!");
+                  }}
+                  className="w-full bg-[#0A2540] text-white py-2 font-bold mb-2 hover:bg-[#081e33] transition-colors text-sm rounded">
+                  Copy HTML
+                </button>
+                <button onClick={() => setIsEmbedModalOpen(false)} className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-800 py-2">Close</button>
+            </div>
+         </div>
+      )}
     </div>
   );
 }

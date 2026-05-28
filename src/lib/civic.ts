@@ -4,7 +4,7 @@
  */
 
 // This function takes an address string and returns districts for that address.
-export async function lookupDistricts(address: string): Promise<{ congressional: string | null, stateHouse: string | null, pollingLocation?: {name: string, address: string} | null, error?: string }> {
+export async function lookupDistricts(address: string): Promise<{ congressional: string | null, stateSenate: string | null, stateHouse: string | null, pollingLocation?: {name: string, address: string} | null, error?: string }> {
   // If the user has added a Google Civic API Key, prefer that since it's more accurate.
   const civicApiKey = (import.meta as any).env?.VITE_GOOGLE_CIVIC_API_KEY || (import.meta as any).env?.VITE_GOOGLE_PLACES_API_KEY || (import.meta as any).env?.VITE_GOOGLE_API_KEY || '';
   
@@ -30,6 +30,7 @@ async function lookupViaGoogleCivic(address: string, apiKey: string) {
 
     const data = await repResponse.json();
     let congressional = null;
+    let stateSenate = null;
     let stateHouse = null;
     
     if (data.divisions) {
@@ -38,9 +39,13 @@ async function lookupViaGoogleCivic(address: string, apiKey: string) {
                 const num = parseInt(id.split('/cd:')[1], 10);
                 if (!isNaN(num)) congressional = `CD ${num.toString().padStart(3, '0')}`;
             }
+            if (id.includes('/sldu:')) {
+                const num = parseInt(id.split('/sldu:')[1], 10);
+                if (!isNaN(num)) stateSenate = `SD ${num.toString().padStart(3, '0')}`;
+            }
             if (id.includes('/sldl:')) {
                 const num = parseInt(id.split('/sldl:')[1], 10);
-                if (!isNaN(num)) stateHouse = `District ${num.toString().padStart(3, '0')}`;
+                if (!isNaN(num)) stateHouse = `HD ${num.toString().padStart(3, '0')}`;
             }
         }
     }
@@ -65,10 +70,10 @@ async function lookupViaGoogleCivic(address: string, apiKey: string) {
         console.log("Could not fetch voter info details", e);
     }
 
-    return { congressional, stateHouse, pollingLocation };
+    return { congressional, stateSenate, stateHouse, pollingLocation };
   } catch (err) {
     console.error('Fetch error', err);
-    return { congressional: null, stateHouse: null, pollingLocation: null, error: 'Network error.' };
+    return { congressional: null, stateSenate: null, stateHouse: null, pollingLocation: null, error: 'Network error.' };
   }
 }
 
@@ -90,23 +95,24 @@ async function lookupViaCensus(address: string) {
             const errData = await response.json();
             errMsg = errData.error || errData.message || errMsg;
         } catch(e) {}
-        return { congressional: null, stateHouse: null, pollingLocation: null, error: errMsg };
+        return { congressional: null, stateSenate: null, stateHouse: null, pollingLocation: null, error: errMsg };
     }
 
     const data = await response.json();
     
     // Census returns empty or error format
     if (data.error) {
-         return { congressional: null, stateHouse: null, pollingLocation: null, error: data.error };
+         return { congressional: null, stateSenate: null, stateHouse: null, pollingLocation: null, error: data.error };
     }
     if (!data.result || !data.result.addressMatches || data.result.addressMatches.length === 0) {
-        return { congressional: null, stateHouse: null, pollingLocation: null, error: `No exact district matches for: ${cleanAddress}` };
+        return { congressional: null, stateSenate: null, stateHouse: null, pollingLocation: null, error: `No exact district matches for: ${cleanAddress}` };
     }
 
     const match = data.result.addressMatches[0];
     const geographies = match.geographies || {};
 
     let congressional = null;
+    let stateSenate = null;
     let stateHouse = null;
 
     // Parse Congressional District
@@ -116,17 +122,24 @@ async function lookupViaCensus(address: string) {
         congressional = `CD ${cdBase.padStart(3, '0')}`;
     }
 
+    // Parse State Senate District (Upper Legislative District)
+    const upperKey = Object.keys(geographies).find(k => k.includes('State Legislative Districts - Upper'));
+    if (upperKey && geographies[upperKey].length > 0) {
+        const senateBase = geographies[upperKey][0].BASENAME;
+        stateSenate = `SD ${senateBase.padStart(3, '0')}`;
+    }
+
     // Parse State House District (Lower Legislative District)
     const lowerKey = Object.keys(geographies).find(k => k.includes('State Legislative Districts - Lower'));
     if (lowerKey && geographies[lowerKey].length > 0) {
         const houseBase = geographies[lowerKey][0].BASENAME;
-        stateHouse = `District ${houseBase.padStart(3, '0')}`;
+        stateHouse = `HD ${houseBase.padStart(3, '0')}`;
     }
 
-    return { congressional, stateHouse, pollingLocation: null };
+    return { congressional, stateSenate, stateHouse, pollingLocation: null };
   } catch (err) {
     console.error('Fetch error', err);
-    return { congressional: null, stateHouse: null, pollingLocation: null, error: 'Network error.' };
+    return { congressional: null, stateSenate: null, stateHouse: null, pollingLocation: null, error: 'Network error.' };
   }
 }
 

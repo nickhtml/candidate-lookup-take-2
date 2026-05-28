@@ -14,9 +14,11 @@ interface LookupFiltersProps {
   selectedCategory: string;
   setSelectedCategory: (c: string) => void;
   userCongressional: string | null;
+  userStateSenate: string | null;
   userStateHouse: string | null;
   userPollingLocation: {name: string, address: string} | null;
   setUserCongressional: (val: string | null) => void;
+  setUserStateSenate: (val: string | null) => void;
   setUserStateHouse: (val: string | null) => void;
   setUserPollingLocation: (val: {name: string, address: string} | null) => void;
   addressLookupActive: boolean;
@@ -29,9 +31,11 @@ export function LookupFilters({
   selectedCategory, 
   setSelectedCategory,
   userCongressional,
+  userStateSenate,
   userStateHouse,
   userPollingLocation,
   setUserCongressional,
+  setUserStateSenate,
   setUserStateHouse,
   setUserPollingLocation,
   addressLookupActive,
@@ -57,6 +61,7 @@ export function LookupFilters({
     }
 
     if (result.congressional) setUserCongressional(result.congressional);
+    if (result.stateSenate) setUserStateSenate(result.stateSenate);
     if (result.stateHouse) setUserStateHouse(result.stateHouse);
     if (result.pollingLocation) setUserPollingLocation(result.pollingLocation);
     setAddressLookupActive(true);
@@ -70,6 +75,7 @@ export function LookupFilters({
   const skipLookup = () => {
     setError(null);
     setUserCongressional(null);
+    setUserStateSenate(null);
     setUserStateHouse(null);
     setUserPollingLocation(null);
     setAddressLookupActive(true);
@@ -78,6 +84,7 @@ export function LookupFilters({
   const clearAddress = () => {
     setAddressLookupActive(false);
     setUserCongressional(null);
+    setUserStateSenate(null);
     setUserStateHouse(null);
     setUserPollingLocation(null);
     setAddress('');
@@ -139,12 +146,14 @@ export function LookupFilters({
         <div>
           <div className="bg-white p-4 border-b flex flex-col justify-center items-center gap-1 text-center">
             <div className="text-sm w-full">
-               {userCongressional || userStateHouse ? (
+               {userCongressional || userStateSenate || userStateHouse ? (
                  <div className="flex flex-col items-center">
                    <div className="flex items-center gap-1 font-bold text-[#0A2540]">
                       <MapPin className="h-3 w-3" /> Your Districts
                    </div> 
-                   <span className="text-gray-600 text-xs mt-1">{userCongressional || 'Unknown'} | {userStateHouse || 'Unknown'}</span>
+                   <span className="text-gray-600 text-xs mt-1">
+                      {[userCongressional, userStateSenate, userStateHouse].filter(Boolean).join(' | ')}
+                   </span>
                    
                    {userPollingLocation ? (
                      <div className="mt-4 bg-blue-50 border border-blue-200 rounded p-3 w-full max-w-sm">
