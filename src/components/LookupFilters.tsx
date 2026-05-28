@@ -146,11 +146,18 @@ export function LookupFilters({
                    </div> 
                    <span className="text-gray-600 text-xs mt-1">{userCongressional || 'Unknown'} | {userStateHouse || 'Unknown'}</span>
                    
-                   {userPollingLocation && (
-                     <div className="mt-4 bg-blue-50 border border-blue-100 p-3 w-full max-w-sm">
+                   {userPollingLocation ? (
+                     <div className="mt-4 bg-blue-50 border border-blue-200 rounded p-3 w-full max-w-sm">
                        <p className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-1">Your Polling Location</p>
                        <p className="text-sm font-semibold text-blue-950">{userPollingLocation.name}</p>
                        <p className="text-xs text-blue-800 mt-0.5">{userPollingLocation.address}</p>
+                     </div>
+                   ) : (
+                     <div className="mt-4 bg-blue-50 border border-blue-200 rounded p-3 w-full max-w-sm">
+                       <p className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-1">Your Polling Location</p>
+                       <p className="text-xs text-blue-800 mt-0.5 leading-relaxed">
+                         To find your polling location, please visit the <a href="https://okvoterportal.okelections.us/" target="_blank" rel="noreferrer" className="text-blue-600 font-semibold hover:underline">OK Voter Portal</a>.
+                       </p>
                      </div>
                    )}
                  </div>

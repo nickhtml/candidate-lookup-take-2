@@ -6,7 +6,7 @@
 // This function takes an address string and returns districts for that address.
 export async function lookupDistricts(address: string): Promise<{ congressional: string | null, stateHouse: string | null, pollingLocation?: {name: string, address: string} | null, error?: string }> {
   // If the user has added a Google Civic API Key, prefer that since it's more accurate.
-  const civicApiKey = (import.meta as any).env?.VITE_GOOGLE_CIVIC_API_KEY || '';
+  const civicApiKey = (import.meta as any).env?.VITE_GOOGLE_CIVIC_API_KEY || (import.meta as any).env?.VITE_GOOGLE_PLACES_API_KEY || (import.meta as any).env?.VITE_GOOGLE_API_KEY || '';
   
   if (civicApiKey) {
     return await lookupViaGoogleCivic(address, civicApiKey);
@@ -45,10 +45,10 @@ async function lookupViaGoogleCivic(address: string, apiKey: string) {
         }
     }
     
-    // Attempt to fetch polling location (using electionId 2000 for VIP Test or letting it default)
+    // Attempt to fetch polling location (using returnAllAvailableData to get info even if no major election is near)
     let pollingLocation = null;
     try {
-        const voterResponse = await fetch(`https://www.googleapis.com/civicinfo/v2/voterinfo?address=${encodedAddress}&key=${apiKey}`);
+        const voterResponse = await fetch(`https://www.googleapis.com/civicinfo/v2/voterinfo?address=${encodedAddress}&returnAllAvailableData=true&key=${apiKey}`);
         if (voterResponse.ok) {
             const voterData = await voterResponse.json();
             if (voterData.pollingLocations && voterData.pollingLocations.length > 0) {
@@ -58,6 +58,8 @@ async function lookupViaGoogleCivic(address: string, apiKey: string) {
                     address: `${loc.address?.line1 || ''}, ${loc.address?.city || ''}, ${loc.address?.state || ''} ${loc.address?.zip || ''}`.trim().replace(/^,\s/, '')
                 };
             }
+        } else {
+            console.warn(`Civic VoterInfo API non-ok:`, await voterResponse.text());
         }
     } catch (e) {
         console.log("Could not fetch voter info details", e);
