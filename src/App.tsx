@@ -17,6 +17,7 @@ export default function App() {
   const [addressLookupActive, setAddressLookupActive] = useState(false);
   const [userCongressional, setUserCongressional] = useState<string | null>(null);
   const [userStateHouse, setUserStateHouse] = useState<string | null>(null);
+  const [userPollingLocation, setUserPollingLocation] = useState<{name: string, address: string} | null>(null);
 
   // Derive the active candidates to render
   const filteredData = useMemo(() => {
@@ -84,8 +85,10 @@ export default function App() {
           setSelectedCategory={setSelectedCategory}
           userCongressional={userCongressional}
           userStateHouse={userStateHouse}
+          userPollingLocation={userPollingLocation}
           setUserCongressional={setUserCongressional}
           setUserStateHouse={setUserStateHouse}
+          setUserPollingLocation={setUserPollingLocation}
           addressLookupActive={addressLookupActive}
           setAddressLookupActive={setAddressLookupActive}
         />

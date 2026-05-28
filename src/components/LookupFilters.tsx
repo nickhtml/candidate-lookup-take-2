@@ -15,8 +15,10 @@ interface LookupFiltersProps {
   setSelectedCategory: (c: string) => void;
   userCongressional: string | null;
   userStateHouse: string | null;
+  userPollingLocation: {name: string, address: string} | null;
   setUserCongressional: (val: string | null) => void;
   setUserStateHouse: (val: string | null) => void;
+  setUserPollingLocation: (val: {name: string, address: string} | null) => void;
   addressLookupActive: boolean;
   setAddressLookupActive: (val: boolean) => void;
 }
@@ -28,8 +30,10 @@ export function LookupFilters({
   setSelectedCategory,
   userCongressional,
   userStateHouse,
+  userPollingLocation,
   setUserCongressional,
   setUserStateHouse,
+  setUserPollingLocation,
   addressLookupActive,
   setAddressLookupActive
 }: LookupFiltersProps) {
@@ -54,6 +58,7 @@ export function LookupFilters({
 
     if (result.congressional) setUserCongressional(result.congressional);
     if (result.stateHouse) setUserStateHouse(result.stateHouse);
+    if (result.pollingLocation) setUserPollingLocation(result.pollingLocation);
     setAddressLookupActive(true);
   };
 
@@ -66,6 +71,7 @@ export function LookupFilters({
     setError(null);
     setUserCongressional(null);
     setUserStateHouse(null);
+    setUserPollingLocation(null);
     setAddressLookupActive(true);
   };
 
@@ -73,6 +79,7 @@ export function LookupFilters({
     setAddressLookupActive(false);
     setUserCongressional(null);
     setUserStateHouse(null);
+    setUserPollingLocation(null);
     setAddress('');
   };
 
@@ -130,14 +137,22 @@ export function LookupFilters({
         </div>
       ) : (
         <div>
-          <div className="bg-white p-3 border-b flex flex-col justify-center items-center gap-1 text-center">
-            <div className="text-sm">
+          <div className="bg-white p-4 border-b flex flex-col justify-center items-center gap-1 text-center">
+            <div className="text-sm w-full">
                {userCongressional || userStateHouse ? (
                  <div className="flex flex-col items-center">
                    <div className="flex items-center gap-1 font-bold text-[#0A2540]">
                       <MapPin className="h-3 w-3" /> Your Districts
                    </div> 
                    <span className="text-gray-600 text-xs mt-1">{userCongressional || 'Unknown'} | {userStateHouse || 'Unknown'}</span>
+                   
+                   {userPollingLocation && (
+                     <div className="mt-4 bg-blue-50 border border-blue-100 p-3 w-full max-w-sm">
+                       <p className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-1">Your Polling Location</p>
+                       <p className="text-sm font-semibold text-blue-950">{userPollingLocation.name}</p>
+                       <p className="text-xs text-blue-800 mt-0.5">{userPollingLocation.address}</p>
+                     </div>
+                   )}
                  </div>
                ) : (
                  <span className="font-bold text-[#0A2540]">All Candidates</span>
@@ -145,7 +160,7 @@ export function LookupFilters({
             </div>
             <button 
               onClick={clearAddress}
-              className="text-xs font-bold mt-2 text-blue-600 hover:text-blue-800 hover:underline"
+              className="text-xs font-bold mt-3 text-blue-600 hover:text-blue-800 hover:underline"
             >
               Change Address
             </button>
