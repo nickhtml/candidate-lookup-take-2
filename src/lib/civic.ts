@@ -23,7 +23,9 @@ async function lookupViaGoogleCivic(address: string, apiKey: string) {
     const repResponse = await fetch(`https://www.googleapis.com/civicinfo/v2/representatives?address=${encodedAddress}&key=${apiKey}`);
     
     if (!repResponse.ok) {
-        return { congressional: null, stateHouse: null, pollingLocation: null, error: 'Address not found or API error.' };
+        console.warn(`Google Civic API Error:`, await repResponse.text());
+        // Fall back to Census
+        return await lookupViaCensus(address);
     }
 
     const data = await repResponse.json();
