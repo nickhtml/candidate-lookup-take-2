@@ -50,6 +50,8 @@ export const candidatesData: Candidate[] = [
   { level: "State House", office: "State Representative (District 096)", name: "Austin Reams", website: "https://www.austinreamsforstatehouse.com/" },
   { level: "State House", office: "State Representative (District 097)", name: "Aletia Timmons*", website: "https://timmonsfordist97.com/" },
   { level: "State House", office: "State Representative (District 097)", name: "Chimere Grant", website: "https://www.chimeregrant.com/" },
-  { level: "State House", office: "State Representative (District 099)", name: "Carlos Robinson", website: "https://drcarlosforokc.com/" },
-  { level: "State House", office: "State Representative (District 099)", name: "Herschel Brown", website: "https://www.facebook.com/" }
+  { level: "State House", office: "State Representative (District 099)", name: "Herschel Brown", website: "https://www.brownfor99.com/" },
+  { level: "State House", office: "State Representative (District 099)", name: "Derrick Sier", website: "https://derricksierforok.com/" },
+  { level: "State House", office: "State Representative (District 099)", name: "Steve Davis", website: "https://www.facebook.com/votestevedavis/" },
+  { level: "State House", office: "State Representative (District 099)", name: "Alan Washington", website: "https://www.washingtonforhd99.com/" }
 ];
