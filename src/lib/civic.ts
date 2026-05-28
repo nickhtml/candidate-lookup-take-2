@@ -79,14 +79,24 @@ async function lookupViaCensus(address: string) {
     const url = `/api/lookup?address=${encodedAddress}`;
     
     const response = await fetch(url);
+    
     if (!response.ok) {
-        return { congressional: null, stateHouse: null, error: 'Network error with US Census Geocoder.' };
+        let errMsg = 'Network error with Geocoder API.';
+        try {
+            const errData = await response.json();
+            errMsg = errData.error || errData.message || errMsg;
+        } catch(e) {}
+        return { congressional: null, stateHouse: null, pollingLocation: null, error: errMsg };
     }
 
     const data = await response.json();
     
+    // Census returns empty or error format
+    if (data.error) {
+         return { congressional: null, stateHouse: null, pollingLocation: null, error: data.error };
+    }
     if (!data.result || !data.result.addressMatches || data.result.addressMatches.length === 0) {
-        return { congressional: null, stateHouse: null, error: 'Could not find exact district info. Please try an exact street address.' };
+        return { congressional: null, stateHouse: null, pollingLocation: null, error: `No exact district matches for: ${cleanAddress}` };
     }
 
     const match = data.result.addressMatches[0];

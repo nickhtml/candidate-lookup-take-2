@@ -52,7 +52,7 @@ export function LookupFilters({
     setLoading(false);
 
     if (result.error) {
-       setError('Could not find district info. Try an exact address.');
+       setError(result.error);
        return;
     }
 

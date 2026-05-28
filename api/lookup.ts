@@ -17,10 +17,20 @@ export default async function handler(req: any, res: any) {
     // Vercel serverless function proxy to the US Census API
     const url = `https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=${encodedAddress}&benchmark=Public_AR_Current&vintage=Current_Current&format=json`;
 
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'OKDEMS Candidate Lookup Serverless Helper (nicholasghickman@gmail.com)'
+      },
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
-      return res.status(response.status).json({ error: "Upstream API error" });
+      return res.status(response.status).json({ error: `Census API returned status ${response.status}` });
     }
 
     const data = await response.json();
