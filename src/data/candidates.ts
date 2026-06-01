@@ -24,9 +24,9 @@ export const candidatesData: Candidate[] = [
 
   // --- CONGRESSIONAL SHEET ---
   { level: "Congressional", office: "US Representative (CD 002)", name: "Brandon Wade", website: "https://brandon4congress.com/" },
-  { level: "Congressional", office: "US Representative (CD 002)", name: "Erik Treway", website: "https://terweyforcongress.com/" },
+  { level: "Congressional", office: "US Representative (CD 002)", name: "Erik Terwey", website: "https://terweyforcongress.com/" },
   { level: "Congressional", office: "US Representative (CD 003)", name: "Jules Roberson", website: "https://oklahomafight.com/" },
-  { level: "Congressional", office: "US Representative (CD 003)", name: "Suzie Bryd", website: "https://www.facebook.com/SuzieByrd4Congress/" },
+  { level: "Congressional", office: "US Representative (CD 003)", name: "Suzie Byrd", website: "https://www.facebook.com/SuzieByrd4Congress/" },
   { level: "Congressional", office: "US Representative (CD 004)", name: "Mitchell Jacob", website: "https://mitchelljacob.com/" },
   { level: "Congressional", office: "US Representative (CD 004)", name: "Jeff Pixley", website: "https://pixleyforcongress.com/" },
   { level: "Congressional", office: "US Representative (CD 005)", name: "Jena Nelson", website: "https://jenanelson.com/" },
